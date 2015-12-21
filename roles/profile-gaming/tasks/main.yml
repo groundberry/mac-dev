@@ -1,0 +1,6 @@
+---
+
+- name: install gaming cask applications
+  homebrew_cask: name={{ item }} state=present
+  with_items:
+    - steam

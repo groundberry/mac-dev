@@ -1,0 +1,7 @@
+os:
+  - osx
+
+osx_image: xcode8.1
+
+script:
+  - ./install.sh

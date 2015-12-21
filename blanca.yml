@@ -1,0 +1,43 @@
+---
+
+- hosts: 127.0.0.1
+  connection: local
+
+  pre_tasks:
+    - name: clone dotfiles
+      git: repo=https://github.com/groundberry/dotfiles.git dest=~/.dotfiles
+           recursive=yes accept_hostkey=yes
+
+    - name: install dotfiles
+      shell: ./install.sh
+      args:
+        chdir: ~/.dotfiles
+
+  post_tasks:
+    - name: hide dock without delay
+      shell: defaults write com.apple.Dock autohide-delay -float 0
+    - name: hide dock faster
+      shell: defaults write com.apple.dock autohide-time-modifier -float 0.15
+    - name: disable swipe gestures for chrome
+      shell: killall Dock
+    - name: restart dock
+      shell: defaults write com.google.Chrome.plist AppleEnableSwipeNavigateWithScrolls -bool FALSE
+    - name: set host name
+      become: yes
+      shell: scutil --set HostName {{ computername }}
+    - name: set local host name
+      become: yes
+      shell: scutil --set LocalHostName {{ computername }}
+    - name: set computer name
+      become: yes
+      shell: scutil --set ComputerName {{ computername }}
+
+  roles:
+    - profile-dev-bash
+    - profile-dev-browser
+    - profile-dev-node
+    - profile-dev-ruby
+
+  vars_prompt:
+  - name: computername
+    prompt: Computer name
